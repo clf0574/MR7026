@@ -1,0 +1,200 @@
+//============================================================================
+
+#ifndef _APP_IT2_H
+	#define _APP_IT2_H
+
+//============================================================================
+//帧命令定义
+#define B_ONLINE   		0x01
+#define B_DIS_BUS   		0x02
+#define B_EN_BUS   		0x03
+#define B_EXEC_SCENE		0x04
+#define B_DEL_SCENE		0x05
+#define F_ASK_TIME		0x08
+#define F_ACK_TIME		0x09
+#define F_SET_TIME		0x0A
+#define F_ASK_VERSION		0x0B
+#define F_ACK_VERSION		0x0C
+
+#define F_ASK_UPDATE		0x0D
+#define F_ACK_UPDATE		0x0E
+#define F_ASK_UPDATE_START	0x0F
+#define F_ACK_UPDATE_FINISH	0x10
+
+#define F_ASK_CONFIG_ADDR	0x20
+#define F_ASK_CONFIG_MODULE	0x21
+#define F_DEL_MODULE_CONFIG	0x23
+#define F_REPORT_MODULE_DEL	0x24
+
+#define F_ASK_GATEWAY_DATA	0x30
+#define F_ACT_DEVICE 	        0x31
+#define F_REPORT_STATUS 	0x32
+#define F_REPORT_ONLINE		0x33
+
+#define F_ASK_MODIFY		0x34
+#define F_ASK_INFO		0x35
+#define F_ASK_CONFIG_KEY	0x36
+#define F_ASK_SYNC_KEY		0x37
+#define F_SETUP_DEV_PARA	0x38
+#define F_READ_DEV_PARA		0x39
+#define F_REPORT_DEV_PARA	0x3A
+#define F_REPORT_DEV_MODIFY	0x3B
+#define F_ACK_DEV		0x3E
+
+#define F_ACK_REQUEST_ADDR	0x3F
+#define F_ASK_EXCHANGER_ADDCODE	0x40
+#define F_ASK_EXCHANGER_DELCODE	0x41
+
+#define F_ACT_SCENE		0x50
+#define F_ASK_SCENE_DATA	0x51
+#define F_ACK_SCENE_DATA	0x52
+#define F_ASK_SCENE_ADD		0x53
+#define F_ASK_SCENE_DEL		0x55
+
+#define F_ASK_TIMER_ADD		0x60
+#define F_ASK_TIMER_EDIT	0x61
+#define F_ASK_TIMER_DEL		0x62
+#define F_ASK_TIMER_ONOFF	0x63
+
+#define F_ASK_ARRAY_ADD		0x70
+#define F_ASK_ARRAY_DEL		0x71
+
+//====================================================================================
+//操作类型定义
+
+
+
+
+
+
+//====================================================================================
+//函数定义
+void IT2_ParseFrame(void);
+
+
+
+void App2_Sensor_Disable_Check(void);
+void App2_Sensor_DataLoad(uint8_t key_index,uint8_t key_value);
+uint8_t App2_PraseASK(void);
+void App2_para_init(void);
+void App2_Pannel_DataLoad(uint8_t key_index,uint8_t key_value);
+void App2_Offline_Send(uint8_t key);
+void App2_Load_RS485_Ack(uint8_t st);
+void App2_Function_Setup(uint8_t *pt);
+void App2_Function_Date(uint8_t *pt);
+void App2_Function_CMD(uint8_t *pt);
+void App2_Function_Broadcast(uint8_t *pt);
+void App2_Frame_availability(uint8_t *p);
+void App2_Dev_RequestAddr(void);
+void App2_Dev_Register(void);
+void App2_Dev_default_setup(void);
+uint8_t App2_Check_Ask(void);
+void App2_Get_PannelType(uint8_t key,uint8_t *pt);
+void App2_Analog_DataLoad(void);
+void App2_Encode_DataLoag(uint8_t cmd,uint8_t dat1,uint8_t dat2);
+
+
+////初始化
+//void App2_para_init(void);			
+////帧完整性检测
+//void App2_Frame_availability(unsigned char *p);
+////RS485解析-IT第二代协议
+//void App2_ParseFrame(void);
+////用于简析广播命令报文
+//void App2_Function_Broadcast(void);
+////用于简析点对点命令报文
+//void App2_Function_CMD(void);
+////虚拟设备添加，删除 和 设备配置
+//void App2_Function_Setup(unsigned char *pt);
+////485应答帧主句装入
+//void App2_Load_RS485_Ack(unsigned char st);
+//////  类型转换  RS485过来
+//unsigned char App2_RS485_Type_Change(unsigned char pa1,unsigned char pa2);
+////遥控器对码 保存
+//void App2_Remote_Encode(void);
+////上电或复位后，只有设备本身注册成功后，才离开这里
+//void App2_Dev_Register(void);
+////请求帧
+//void App2_Register_Frame(unsigned char pt);
+////等待应答处理
+////unsigned char App2_RS485_ASK(_Frame *p);
+////应答帧简析
+//unsigned char App2_PraseASK(void);
+////无线发送对码帧, 输入参数为命令
+//void App2_Wireless_LoadData(unsigned char cmd,unsigned char *pt);
+////无线转有线 命令字转换
+//unsigned char App2_Table_Wireless_To_RS485(unsigned char cmd);
+////有线转无线 命令字转换
+//unsigned char App2_Table_RS485_To_Wireless(unsigned char cmd);
+////正常运行情况下，无线转485处理
+//void App2_Wireless_Convert_RS485(void);
+////无线接收数据，在转发表中查找地址
+//unsigned char App2_Find_ExTable1(unsigned char tmp1,unsigned char tmp2,unsigned char tmp3);
+////在虚拟设备中，查找地址（相对485）
+//unsigned char App2_Find_ExTable2(unsigned char index,unsigned int addr);
+////检测所有未注册成功的虚拟设备中，返回最早保存的一个
+//unsigned char App2_Find_DevTable_UnRegister(void);
+////指定虚拟设备 注册成功
+//void App2_Set_DevTable_Register(unsigned char index);
+////指定虚拟设备 重新注册上电
+//void App2_Reset_DevTable_Register(unsigned char index);
+////写入转换表
+//void App2_Ex_Table_WriteEEP(void);
+////初始化转换表
+//void App2_Ex_Table_Init(void);
+////数据报文处理
+//void App2_Function_Date(unsigned char*pt);
+////设备类型转换-相对485总线类型
+//void App2_Type_Change_RS485(unsigned char *pt,unsigned char type);
+////
+//
+////
+//void App2_Gear_Action(void);
+//
+////离线命令发送，参数为地址和通道
+//void App2_Offline_Send(unsigned char addr,unsigned char channel,unsigned char cmd);
+//
+////============================================================================================
+
+
+#endif
+
+//============================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+

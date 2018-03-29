@@ -1,0 +1,469 @@
+/*
+*********************************************************************************************************
+ËµÃ÷£º
+1.¶ÅÑÇÖÇÄÜ¼Ò¾Ó-Ãæ°åÀà³ÌÐòÄ£°å
+2.²ÉÓÃ»ìºÏÊ½µ÷¶È³ÌÐò
+3.·¢ËÍº¯Êý²ÉÓÃ×ÜÏß¾ºÕùËã·¨£¬°üÀ¨
+	a.×ÜÏßÅÐ¶ÏÊÇ·ñ¿ÕÏÐ£¬Ã¦×ÅÍË³ö
+	b.µÈ´ý¿ÕÏÐºó·¢ËÍÊý¾Ý
+	c.·¢ËÍÍêÊý¾Ý£¬ÅÐ¶Ï½ÓÊÕ»º³åÇøµÄÊý¾ÝÊÇ·ñºÍ·¢ËÍ»º³åÇøµÄÒ»ÖÂ£¬²»Ò»ÖÂÔòÅÐ¶ÏÊ§°Ü£¬ÖØ·¢
+	d.ÔÚÔ¤¶¨Ê±¼äÄÚµÈ´ý½ÓÊÕÖ÷»úµÄÓ¦´ð£¬³¬Ê±»ò³ö´í£¬ÔòÅÐ¶ÏÊ§°Ü£¬ÖØ·¢
+	e.Ê§°ÜÖØ·¢×î¶à5´Î
+
+*
+*********************************************************************************************************
+*/
+//#include "bsp.h"			 /* µ×²ãÓ²¼þÇý¶¯ */
+//#include "Time_Triggered.h"
+#include "includes.h"
+
+ //½øÈëÉèÖÃ½çÃæµÄÃÜÂë
+const uint8_t SETUP_CODE[4]={1,2,0,3};
+ 
+static void AppTask_RivalrySend(void);
+static void taskRxProcess(void);
+void AppTask_BusMonitor(void);
+static void AppTask_WirelessRecv(void);
+static void AppTask_WirelessSend(void);
+
+static void AppTask_Run(void);
+
+void Check_Frame_Interval(void);
+
+/*
+*********************************************************************************************************
+*	º¯ Êý Ãû: main
+*	¹¦ÄÜËµÃ÷: c³ÌÐòÈë¿Ú
+*	ÐÎ    ²Î£ºÎÞ
+*	·µ »Ø Öµ: ´íÎó´úÂë(ÎÞÐè´¦Àí)
+*********************************************************************************************************
+*/
+int main(void)
+{
+	//uint8_t i;
+	
+	bsp_Init();		    /* Ó²¼þ³õÊ¼»¯ */
+	
+	Dev_Init();				//
+	
+		/* Ìí¼Ó ¸öÈÎÎñ */
+	//hSCH_Add_Task(AppTask_RivalrySend, 1, 1, 1);           	 //¾ºÕù·¢ËÍÈÎÎñ Ã¿2mSµ÷ÓÃÒ»´Î
+	hSCH_Add_Task(taskRxProcess, 2, 9, 1);  								 //½ÓÊÕÈÎÎñ Ã¿10mSµ÷ÓÃÒ»´Î
+	hSCH_Add_Task(AppTask_WirelessRecv, 3, 9, 1);        		 //ÎÞÏß½ÓÊÕÈÎÎñ
+	hSCH_Add_Task(AppTask_WirelessSend, 3, 99, 1);        	 //ÎÞÏß·¢ËÍÈÎÎñ
+	
+	hSCH_Add_Task(AppTask_Run, 4, 9, 1);        						 //ÔËÐÐÈÎÎñ //Ã¿10mSµ÷ÓÃÒ»´Î
+	
+	Led_set(0,30,30,LOOP,1);	
+        Led_set(1,30,30,3,2);		
+	
+	bsp_StartHardTimer(1,100,Check_Frame_Interval);							//Ã¿100uSµ÷ÓÃÒ»´ÎÖ¡¼ä¸ô¼ì²â	
+	//bsp_InitIwdg(2000);																				//Ê¹ÄÜ¿´ÃÅ¹·
+
+	/* ½øÈëÖ÷³ÌÐòÑ­»·Ìå */
+	while (1)
+	{
+		/* ÈÎÎñÖ´ÐÐº¯Êý */
+		hSCH_Dispatch_Tasks();
+	}
+}
+
+/*
+*********************************************************************************************************
+*	º¯ Êý Ãû: AppTask_RivalrySend
+*	¹¦ÄÜËµÃ÷: ×ÜÏß¾ºÕù·¢ËÍ
+*	ÐÎ    ²Î£ºÎÞ
+*	·µ »Ø Öµ: ÎÞ
+*********************************************************************************************************
+*/
+void AppTask_RivalrySend(void)
+{
+	static uint8_t send_step=0,index=0;														 //·¢ËÍ½×¶Î
+	static uint8_t t_buf[30],t_cnt,t_resend,t_offline;
+	
+	_Frame *ps;
+	
+	uint8_t i,ret;
+	
+	//========================================================================================
+	timeout++;																											//³¬Ê±ÀÛ¼Æ																				
+	
+  //=========================================================================================	
+	if(send_step==0)																								//»¹Î´½øÈë·¢ËÍ×´Ì¬
+	{
+		if(Bus.distime>0)				//×ÜÏß¾ºÕù				
+		{
+					return;												
+		}
+		else
+		{
+					ps=GetQueue_OutQ(&RS485_Queue,&index);											//ÓÅÏÈ·¢ËÍ
+					if(ps!=0)
+					{       if(ps->flag==1)
+									{
+													t_cnt=ps->cnt;
+													t_resend=ps->resend;
+										      t_offline=ps->offline;
+													for(i=0;i<t_cnt;i++)
+													{
+																t_buf[i]=ps->buf[i];
+																ps->buf[i]=0;
+													}					
+													send_step=1;															//ÓÐÊý¾ÝÒª·¢ËÍ		
+													Bus.randtime=GetRandTime();								//Ëæ»úÊ±¼äÎª40mmS+rand%40	
+													Bus.WaitForSend=1;
+													Bus.SelfSend=1;
+													timeout=0;
+									}
+									ps->resend=0;
+									ps->cnt=0;
+									ps->flag=0;
+									DeQueueBuf(&RS485_Queue,index);//Çå¶ÓÁÐ
+					}
+					else     
+					{
+									send_step=0;															//ÓÐÊý¾ÝÒª·¢ËÍ		
+									Bus.WaitForSend=0;
+									Bus.SelfSend=0;
+									return;
+					}
+		}		    
+	}
+	//================================================================================================
+	else if(send_step==1)					//ÓÐÊý¾ÝÒª·¢ËÍ
+	{
+				//ÅÐ¶Ï×ÜÏßÊÇ·ñ¿ÕÏÐ
+				if((Bus.WaitForSend==1)&&(Bus.time>=Bus.randtime))
+				{
+									Bus.SelfSend=1;
+									Bus.WaitForSend=0;
+									RS485_Send(t_buf,t_cnt);
+									send_step=2;
+									timeout=0;				//³¬Ê±ÀÛ¼Æ
+					        Bus.rxok=0;
+					        Bus.interval=0;
+				}
+			  else
+				{
+// 									if(timeout>3000)
+// 									{
+// 												Bus.SelfSend=1;
+// 												Bus.WaitForSend=0;
+// 												RS485_Send(t_buf,t_cnt);
+// 												send_step=2;
+// 												timeout=0;				//³¬Ê±ÀÛ¼Æ
+// 									}
+				}
+	}
+	//================================================================================================
+	else if(send_step==2)					//µÈ´ýÊÕµ½×Ô¼º·¢³öµÄÊý¾Ý
+	{	
+				//==================================
+				if(Bus.rxok==1)
+				{				
+								Bus.rxok=0;
+								ret=Check_SelfSend(&t_buf[0],t_cnt);
+								if(ret==0)		//×Ô·¢×ÔÊÕ Ð£¶Ô´í
+								{
+											t_resend--;
+											if(t_resend>0)
+											{
+														send_step=1;
+														Bus.randtime=GetRandTime();	//Ëæ»úÊ±¼äÎª40mmS+rand%40	
+														Bus.WaitForSend=1;
+														Bus.time=0;
+														timeout=0;
+											}
+											else
+											{
+														send_step=0;
+											}
+								}
+								else if(ret==1)		//×Ô·¢×ÔÊÕÍ¨¹ý
+								{
+											send_step=3;
+											timeout=0;
+								}
+								//ÒÔÏÂÇé¿ö³öÏÖÔÚ×Ô·¢×ÔÊÕºÍ¶Ô·½Ó¦´ðÕ³ºÏÔÚÒ»Æð
+								else if(ret==2)
+								{
+											send_step=3;
+											timeout=0;
+								}
+				}
+				//==================================
+				//³¬Ê±´¦Àí
+				if(timeout>=100)				//³¬¹ý100mS£¬Ã»ÊÕµ½×Ô¼º·¢³öµÄÊý¾Ý
+				{
+								t_resend--;
+								if(t_resend==0)
+								{
+											send_step=0;
+								}
+								else
+								{
+											send_step=1;
+											Bus.randtime=GetRandTime();	//Ëæ»úÊ±¼äÎª40mmS+rand%40	
+											Bus.WaitForSend=1;
+											Bus.time=0;
+											timeout=0;
+								}
+				}
+	 }
+	 //================================================================================================
+	 else if(send_step==3)					//µÈ´ýÊÕµ½Ó¦´ðÊý¾Ý
+	 {
+				//===================================================================
+				if(Bus.rxok==1)
+				{
+							 Bus.rxok=0;
+							 ret=IT2_PraseASK(t_buf[1]);
+		
+							 if(ret==0)				//ÓÐ´íÎó
+							 {				
+											t_resend--;
+											if(t_resend==0)
+											{
+														send_step=0;
+											}
+											else
+											{
+														send_step=1;
+														Bus.randtime=GetRandTime();	//Ëæ»úÊ±¼äÎª40mmS+rand%40	
+														Bus.WaitForSend=1;
+														Bus.time=0;
+														timeout=0;
+											}
+								}
+								else 					//³É¹¦ÊÕµ½Ó¦´ðÐÅºÅ
+								{
+											send_step=4;
+											timeout=0;
+								}
+				}
+				//===================================================================
+				//Ó¦´ð³¬Ê±
+				if(timeout>=150)				//³¬¹ý100mS£¬Ã»ÊÕµ½×Ô¼º·¢³öµÄÊý¾Ý
+				{
+								t_resend--;
+								if(t_resend==0)
+								{
+												send_step=0;			//ÍË³ö
+									      //ÀëÏß´¦Àí
+									      if(t_offline==1)
+												{
+													      t_offline=0; 
+																IT2_Offline_DataLoad(index);
+												}
+								}
+								else
+								{
+												send_step=1;
+												Bus.randtime=GetRandTime();	//Ëæ»úÊ±¼äÎª40mmS+rand%40	
+												Bus.WaitForSend=1;
+												Bus.time=0;
+												timeout=0;
+								}
+				}
+	 }	
+	 //====================================================================================================
+	 else if(send_step==4)					//ÊÕµ½Ó¦´ðÊý¾Ý
+	 {
+				//==================================================
+				//ÔËÐÐµ½ÕâÀï£¬±íÊ¾Ó¦´ðÕýÈ·
+				//Èç¹ûÊÇ¿ª·Å485Ð­Òé£¬Dev.stu×´ÌÉÏµç¬Ö±½ÓÎªÕý³£NORMAL£¬Èç¹ûÊÇIT1Ð­Òé£¬Dev.stu×´Ì¬ÉÏµçºóÖ±½ÓÎªREGISTER
+				//Èç¹ûÊÇµØÖ·ÉêÇë
+				//if(Dev.stu==DEV_REQUESTADDR)
+// 		    if(m_cmd==F_ASK_CONFIG_ADDR)&&(RxDat.buf[1]==F_ACK_REQUEST_ADDR)								//ÇëÇóµØÖ·
+// 				{
+// 					   
+// 						 Dev.stu=DEV_REGISTER;
+// 						 Dev.addr[0]=RxDat.buf[14];
+// 				}				
+// 				//Èç¹ûÊÇ×¢²áÉÏ±¨
+// 				else if(Dev.stu==DEV_REGISTER)
+// 				else if(m_cmd==F_REPORT_ONLINE)							//ÉÏÏßÉÏ±¨
+// 				{
+// 						 Dev.stu=DEV_NORMAL;
+// 				}
+// 				//¶ÔÂë×´Ì¬
+// 				else if(Dev.stu>DEV_NORMAL)
+// 				{
+
+// 				}
+// 				//Õý³£Êý¾ÝÉÏ±¨,²»´¦Àí
+// 				else
+// 				{
+// 					
+// 				}
+				//====================================================
+				send_step=0;
+				for(i=0;i<t_cnt;i++)
+				{
+						t_buf[i]=0;
+				}
+				t_cnt=0;
+				t_resend=0;
+				for(i=0;i<RxDat.cnt;i++)
+				{
+						RxDat.buf[i]=0;
+				}
+				RxDat.cnt=0;
+				
+				Bus.SelfSend=0;
+	 }
+}
+
+/*
+*********************************************************************************************************
+*	º¯ Êý Ãû: taskRxProcess
+*	¹¦ÄÜËµÃ÷: ÈÎÎñº¯Êý£¬ÓÃÓÚ×ÜÏß½ÓÊÕµ½µÄ´¦Àí
+*	ÐÎ    ²Î£ºÎÞ
+*	·µ »Ø Öµ: ÎÞ
+*********************************************************************************************************
+*/
+static void taskRxProcess(void)
+{
+	if((Bus.SelfSend==0)&&(Bus.rxok==1))
+	{
+		Bus.rxok=0;
+		IT2_ParseFrame();						
+		Bus.distime=10;																		//×ÜÏß×èÈû
+		    
+		//Èç¹ûÓÐÓ¦´ðÒªÇó£¬ÔòÓ¦´ð(´Ë´¦Ö±½ÓÓ¦´ð£¬²»ÅÐ¶Ï×ÜÏß)
+		if(TxDat.f_tx==1)
+		{					
+		    	RS485_Send(TxDat.buf,TxDat.cnt);
+		    	TxDat.f_tx=0;		
+		}
+	}
+}
+
+
+/*
+*********************************************************************************************************
+*	º¯ Êý Ãû: AppTask_BusMonitor
+*	¹¦ÄÜËµÃ÷: ÈÎÎñº¯Êý£¬ÓÃÓÚ×ÜÏßµÄ¼à¿Ø
+*	ÐÎ    ²Î£ºÎÞ
+*	·µ »Ø Öµ: ÎÞ
+*********************************************************************************************************
+*/
+//×ÜÏß¼à¿Ø³ÌÐò£¬²»¿É¶ÂÈû£¬Ã¿1mSµ÷ÓÃÒ»´Î
+void AppTask_BusMonitor(void)
+{
+
+	if(Bus.distime>0)Bus.distime--;															//×ÜÏß½ûÖ¹Ê±¼ä
+	//if(Bus.interval<10)Bus.interval++;													//×ÜÏßÖ¡Ö®¼ä¼ä¸ôÊ±¼ä
+	if(Bus.time<200)Bus.time++;																	//×ÜÏß¿ÕÏÐÊ±¼ä
+	if(Bus.timeout<250)Bus.timeout++;
+	Dev.rand++;	
+	
+
+// 	 //Õâ¸ö³£Á¿È¡µÃ¹ý´ó£¬»áÊ¹×Ô·¢×ÔÊÕºÍÓ¦´ð·½µÄÓ¦´ðÕ³ºÏÔÚÒ»Æð¡£
+// 	 //µ«¹ýÐ¡µÄ»°£¬Èç¹û·¢ËÍ·½·¢ËÍÊ±ÓÐÖÐ¶Ïµ¼ÖÂÒ»Ö¡Êý¾ÝÓÐÐ¡¼ä¸ô£¬ÕâÀï»á¿´×öÊÇÁ½Ö¡£¬¶øÒýÆð´íÎó¡  ²âÊÔÊ±ÖØµã²âÊÔ
+//   if(Bus.interval==2)
+// 	{
+// 		Bsp_Get_UsartData(&RxDat.buf[0],&RxDat.cnt);
+// 		Bus.rxok=1;																								//½ÓÊÕµ½Ò»Ö¡Êý¾Ý
+// 	}	
+}
+//===============================================================================================
+void Check_Frame_Interval(void)
+{
+		if(Bus.interval<100)Bus.interval++;
+    if(Bus.interval==20)
+	  {
+				Bsp_Get_UsartData(&RxDat.buf[0],&RxDat.cnt);
+				Bus.rxok=1;																								//½ÓÊÕµ½Ò»Ö¡Êý¾Ý
+	  }		
+	  bsp_StartHardTimer(1,100,Check_Frame_Interval);
+}
+
+/*
+*********************************************************************************************************
+*	º¯ Êý Ãû: AppTask_WirelessRecv
+*	¹¦ÄÜËµÃ÷: ½ÓÊÕÎÞÏßÊý¾Ý£¬²¢´¦Àí
+*	ÐÎ    ²Î£ºÎÞ
+*	·µ »Ø Öµ: ÎÞ
+*********************************************************************************************************
+*/
+void AppTask_WirelessRecv(void)
+{
+		Wireless_Recv();																				//Ã»10ms²éÑ¯Ò»´Î
+}
+
+/*
+*********************************************************************************************************
+*	º¯ Êý Ãû: AppTask_WirelessRecv
+*	¹¦ÄÜËµÃ÷: ½ÓÊÕÎÞÏßÊý¾Ý£¬²¢´¦Àí
+*	ÐÎ    ²Î£ºÎÞ
+*	·µ »Ø Öµ: ÎÞ
+*********************************************************************************************************
+*/
+void AppTask_WirelessSend(void)
+{
+		Wireless_Send();																				//Ã»10ms²éÑ¯Ò»´Î
+}
+
+/*
+*********************************************************************************************************
+*	º¯ Êý Ãû: AppTask_LedToggle
+*	¹¦ÄÜËµÃ÷: ËÄ¸öLEDÉÁË¸µÄ³ÌÐò
+*	ÐÎ    ²Î£ºÎÞ
+*	·µ »Ø Öµ: ÎÞ
+*********************************************************************************************************
+*/
+void AppTask_Run(void)
+{
+	static uint8_t t10ms,t100ms;
+	
+	//uint8_t i;
+		
+	t10ms++;
+	bsp_KeyScan();
+	led_run();
+		
+	if(t10ms>=10)
+	{
+		  t10ms=0;
+		  Dev.rand++;
+			t100ms++;
+		
+		 
+			//ÓÃÓÚÉêÇëµØÖ·ºÍ×¢²á
+		  if((t100ms==3)||(t100ms==8))
+			{
+						if(Dev.stu==DEV_REQUESTADDR)IT2_Dev_RequestAddr();
+						else if(Dev.stu==DEV_REGISTER)IT2_Dev_Register();
+			}
+		
+		  if(t100ms>=10)
+			{
+						t100ms=0;
+				    IWDG_Feed();										//Î¹¹·1s
+							
+				    //================================================
+				    //Ê±¼äÀÛ»ý
+						
+				    //================================================
+				    if(Dev.power_time<8)Dev.power_time++;
+				
+				    if(Dev.encode_time>0)Dev.encode_time--;
+						if(Dev.learn_time>0)Dev.learn_time--;
+				
+						if((Dev.stu==DEV_SETUP)&&(Dev.encode_time==0)&&(Dev.learn_time==0))
+						{
+								Dev.stu=DEV_NORMAL;
+						}
+						//==================================================
+			}
+			else
+			{					
+					 //===========================================================================
+					 //ÑÓÊ±·¢ËÍ´¦Àí
+					 Dly_Handle();
+			}
+	}
+}
+
+/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/

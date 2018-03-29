@@ -1,0 +1,463 @@
+//===============================================================================================
+//===============================================================================================
+#include <includes.h>
+
+/*
+*********************************************************************************************************
+*	函 数 名: 
+*	功能说明: 
+*	形    参：
+*			 
+*	返 回 值: 无
+*********************************************************************************************************
+*/
+//设备初始化
+void Dev_Init(void)
+{
+	uint8_t flag,err,i,rt;
+	//uint8_t buf[16];
+	//===============================================================================================
+	//读使用标记
+	flag=Read_Dev(TYPE_EE_ADDR_USED);
+	if(flag!=USED_FLAG)				//没有初始化
+	{
+		//开始初始化
+		Write_Dev(0xff,TYPE_EE_ADDR_ADDR0);
+		Write_Dev(0xff,TYPE_EE_ADDR_ADDR1);		
+		Write_Dev(DEV_MODE_PASS_THROUGH,TYPE_EE_ADDR_MODE);
+		//Write_Dev(FREE1,TYPE_EE_ADDR_PROFILE);
+		Write_Dev(0x01,TYPE_EE_ADDR_TYPES);													//设备类型默认为0x0401 灯光随身贴
+    Init_Ex_Table();																						//初始化表格	
+		
+		//写入设备信息
+		//buf[0]='D';buf[1]='O';buf[2]='O';buf[3]='Y';buf[4]='A';buf[5]='-';buf[6]='H';buf[7]='T';
+		//buf[8]='7';buf[9]='2';buf[10]='0';buf[11]='3';buf[12]='-';buf[13]='V';buf[14]='1';buf[15]='0';
+		
+		//WriteDataToFlash(EE_DEV_INFO,&buf[0],16);
+		
+    Write_Dev(USED_FLAG,TYPE_EE_ADDR_USED);											//使用标记
+	}
+	
+	//===============================================================================================
+	//读出参数
+	
+	Dev.addr[0]=Read_Dev(TYPE_EE_ADDR_ADDR0);
+	Dev.addr[1]=Read_Dev(TYPE_EE_ADDR_ADDR1);
+	Dev.mode=Read_Dev(TYPE_EE_ADDR_MODE);
+	//Dev.profile=Read_Dev(TYPE_EE_ADDR_PROFILE);
+	//if(Dev.profile!=IT1)Dev.profile=FREE1;
+	rt=Read_Dev(TYPE_EE_ADDR_TYPES);
+	Dev.type=0x0400+rt;
+	if((Dev.type==0x0400)||(Dev.type>0x0404))Dev.type=0x0401;
+
+	//================================================================================================
+	//读出转发表
+	err=Read_Ex_Table();
+	if(err==RE_ERR)Dev.err|=ERR_EEPROM;
+    Pannel.cnt=0;
+    //取得已经配置按键哦数量
+    for(i=0;i<KEY_NUM;i++)
+    {
+            if(Pannel.item[i].flag==1)Pannel.cnt++;
+    }
+	
+	//===============================================================================================
+	//清空无线发送队列，清空485发送队列
+	InitQueueBUF(&RS485_Queue);
+	InitQueueBUF(&WirelessSend_Queue);
+	//清空串口发送结构和接收结构
+	for(i=0;i<RX_MAX;i++)RxDat.buf[i]=0;
+	RxDat.cnt=0;
+	for(i=0;i<TX_MAX;i++)TxDat.buf[i]=0;
+	TxDat.cnt=0;	
+	
+	Dev.profile=IT2;													//2代协议
+	Dev.stu=DEV_REQUESTADDR;
+	Dev.power_time=0;
+	Bus.distime=100;
+	
+}
+/*
+*********************************************************************************************************
+*	函 数 名: 
+*	功能说明: 
+*	形    参：
+*			 
+*	返 回 值: 无
+*********************************************************************************************************
+*/
+/*
+*********************************************************************************************************
+*	函 数 名: 
+*	功能说明: 
+*	形    参：
+*			 
+*	返 回 值: 无
+*********************************************************************************************************
+*/
+//自发自收检测
+//uint8_t Check_SelfSend(void)
+uint8_t Check_SelfSend(uint8_t *pt,uint8_t cnt)
+{
+		uint8_t i,flag;
+    
+		 flag=0;
+		 if(cnt==RxDat.cnt)
+		 {			 
+		     flag=1;
+			   for(i=0;i<RxDat.cnt;i++)
+			   {
+					  if(*(pt+i)!=RxDat.buf[i])
+					  {
+					   		flag=0;
+							break;
+					  }
+			   }
+		 }
+		 else if(RxDat.cnt>cnt)
+		 {			 
+			   flag=1;
+			   for(i=0;i<cnt;i++)
+			   {
+					  if(*(pt+i)!=RxDat.buf[i])
+					  {
+					   		flag=0;
+							  break;
+					  }
+			   }
+				 if(flag==1)
+				 {
+					  for(i=0;i<(30-cnt);i++)
+					  {
+						    RxDat.buf[i]=RxDat.buf[i+cnt];
+						}
+						RxDat.cnt=4;
+						flag=2;
+				 }
+				 
+		 }
+		 else
+		 {
+				//Led_set(0,15,30,1,2);//test 2016.3.15
+		 }
+		 return flag;
+}
+
+/*
+*********************************************************************************************************
+*	函 数 名: 
+*	功能说明: 
+*	形    参：
+*			 
+*	返 回 值: 无
+*********************************************************************************************************
+*/
+//取随机数
+uint8_t GetRandTime(void)
+{
+ 	return (40+((Dev.rand+Dev.addr[0])%40));
+
+}
+
+/*
+*********************************************************************************************************
+*	函 数 名: 
+*	功能说明: 
+*	形    参：
+*			 
+*	返 回 值: 无
+*********************************************************************************************************
+*/
+//CRC校验
+uint8_t  Crc8CheckSum(uint8_t *ptr,uint8_t length)
+{
+  unsigned char i;
+  unsigned char Crc8=0;
+  while(length--)
+  {
+    //g(x)=x8+x5+x4+1
+    for(i=0x80; i; i>>=1)
+    {
+      if((Crc8&0x80)!=0)
+      {
+        Crc8<<=1;
+        Crc8^=0x31;
+      }
+      else
+      {
+        Crc8<<=1;
+      }
+      if(*ptr&i)
+      {
+        Crc8^=0x31;
+      }
+    }
+    ptr++;
+  }
+  return Crc8;
+}
+
+//=====================================================================================================
+
+void Init_Ex_Table(void)
+{
+	    uint8_t i;
+	    for(i=0;i<EX_TABLE_NUM;i++)
+	    {
+				  Exchangebuf.type=0xff;
+					Exchangebuf.addr=0xff;
+					Exchangebuf.stu=0xff;
+					Exchangebuf.wl_addr[0]=0xff;
+					Exchangebuf.wl_addr[1]=0xff;
+					Exchangebuf.wl_addr[2]=0xff;
+					Exchangebuf.channel=0xff;
+					Write_Ex_Table(i);	
+			}
+}
+/*
+*********************************************************************************************************
+*	函 数 名: 
+*	功能说明: 
+*	形    参：
+*			 
+*	返 回 值: 无
+*********************************************************************************************************
+*/
+uint8_t Write_Ex_Table(uint8_t index)
+{
+	uint8_t i,sum,*pt,buf[KEY_ITEM_NUM],err,cnt;
+	
+	if(index>=KEY_NUM)return RE_ERR;
+	
+	//=====================================================
+	//上锁
+	
+	pt=(uint8_t *)(Pannel.item+index);
+  sum=0;	
+	for(i=0;i<KEY_ITEM_NUM-1;i++)
+	{
+		buf[i]=*(pt+i);
+		sum=sum+buf[i];
+	}
+	buf[TABLE_ITEM_NUM-1]=sum;
+	
+	cnt=2;
+	while(cnt>0)
+	{
+		I2C_WP_SET(0);
+		err=WriteDataToFlash(EE_PANNEL_ADDR+index*(KEY_ITEM_NUM),&buf[0],KEY_ITEM_NUM);
+		err=WriteDataToFlash(EE_PANNEL_ADDR_BCK+index*(KEY_ITEM_NUM),&buf[0],KEY_ITEM_NUM);
+		I2C_WP_SET(1);
+		cnt--;
+		if(err==0)break;
+	}
+	
+  //====================================================
+	//解锁
+	if(err==0)return RE_OK;
+ 	else      return RE_ERR;
+	
+	
+	
+	
+// 	uint8_t i,sum,*pt,buf[TABLE_ITEM_NUM],err,cnt;
+// 	
+// 	if(index>=EX_TABLE_NUM)return RE_ERR;
+// 	
+// 	//=====================================================
+// 	//上锁
+// 	
+// 	Ex_Table.Exchange[index].type=Exchangebuf.type;
+// 	Ex_Table.Exchange[index].addr=Exchangebuf.addr;
+// 	Ex_Table.Exchange[index].stu=Exchangebuf.stu;
+// 	Ex_Table.Exchange[index].wl_addr[0]=Exchangebuf.wl_addr[0];
+// 	Ex_Table.Exchange[index].wl_addr[1]=Exchangebuf.wl_addr[1];
+// 	Ex_Table.Exchange[index].wl_addr[2]=Exchangebuf.wl_addr[2];
+// 	Ex_Table.Exchange[index].channel=Exchangebuf.channel;
+
+// 	pt=(uint8_t *)(Ex_Table.Exchange+index);
+//   sum=0;	
+// 	for(i=0;i<TABLE_ITEM_NUM-1;i++)
+// 	{
+// 		buf[i]=*(pt+i);
+// 		sum=sum+buf[i];
+// 	}
+// 	buf[TABLE_ITEM_NUM-1]=sum;
+// 	
+// 	cnt=2;
+// 	while(cnt>0)
+// 	{
+// 		I2C_WP_SET(0);
+// 		err=WriteDataToFlash(EE_EX_TABLE_START_ADDR+index*(TABLE_ITEM_NUM),&buf[0],TABLE_ITEM_NUM);
+// 		err=WriteDataToFlash(EE_EX_TABLE_BACK_ADDR+index*(TABLE_ITEM_NUM),&buf[0],TABLE_ITEM_NUM);
+// 		I2C_WP_SET(1);
+// 		cnt--;
+// 		if(err==0)break;
+// 	}
+// 	
+//   //====================================================
+// 	//解锁
+// 	if(err==0)return RE_OK;
+//  	else      return RE_ERR;
+}
+
+ /*
+*********************************************************************************************************
+*	函 数 名: 
+*	功能说明: 
+*	形    参：
+*			 
+*	返 回 值: 无
+*********************************************************************************************************
+*/
+uint8_t Read_Ex_Table(void)
+{
+	uint8_t i,j,sum,buf[KEY_ITEM_NUM],err,cnt=0;
+	uint8_t *pt;
+		
+  err=0;
+	for(i=0;i<KEY_NUM;i++)
+	{	
+		  cnt=2;
+		  while(cnt>0)
+			{	
+				err=ReadDataFromFlash(EE_PANNEL_ADDR+i*(KEY_ITEM_NUM),&buf[0],KEY_ITEM_NUM);
+				cnt--;
+				if(err==0)break;
+			}
+		  sum=0;
+		  for(j=0;j<KEY_ITEM_NUM-1;j++)sum=sum+buf[j];
+		  if(sum==buf[KEY_ITEM_NUM-1])											//校验通过，装入转发表
+			{
+				  pt=(uint8_t *)(Pannel.item+i);
+				  for(j=0;j<KEY_ITEM_NUM;j++)*(pt+j)=buf[j];
+			}
+			else																						  //校验不通道，读备份区
+			{
+				  cnt=2;
+				  while(cnt>0)
+					{
+						err=ReadDataFromFlash(EE_PANNEL_ADDR_BCK+i*(KEY_ITEM_NUM),&buf[0],KEY_ITEM_NUM);
+						cnt--;
+						if(err==0)break;
+					}
+					sum=0;
+					for(j=0;j<KEY_ITEM_NUM-1;j++)sum=sum+buf[j];
+					
+					if(sum==buf[KEY_ITEM_NUM-1])											//校验通过，装入转发表
+					{				
+						 pt=(uint8_t *)(Pannel.item+i);
+						 for(j=0;j<KEY_ITEM_NUM;j++)*(pt+j)=buf[j];
+						 Write_Ex_Table(i);
+            					
+				  }
+					else																							//还是不等于，没辙了，清0
+					{
+							Pannel.item[i].flag=0x00;
+							Pannel.item[i].type=0x00;
+							Pannel.item[i].tg_id=0x00;
+							Pannel.item[i].datalen=0x00;
+							Write_Ex_Table(i);						  
+					}
+			}
+	}
+	if(err!=0)return RE_ERR;
+	else      return RE_OK;
+}
+ /*
+*********************************************************************************************************
+*	函 数 名: 
+*	功能说明: 
+*	形    参：
+*			 
+*	返 回 值: 无
+*********************************************************************************************************
+*/
+uint8_t Write_Dev(uint8_t dat,uint8_t type)
+{
+	uint8_t i,err,cnt,buf[4],addr;
+	
+	if(type==TYPE_EE_ADDR_USED)        addr=EE_DEV_USED;
+	else if(type==TYPE_EE_ADDR_ADDR0)  addr=EE_DEV_ADDR0;
+	else if(type==TYPE_EE_ADDR_ADDR1)  addr=EE_DEV_ADDR1;
+	else if(type==TYPE_EE_ADDR_MODE)   addr=EE_DEV_MODE;
+	else if(type==TYPE_EE_ADDR_PROFILE)addr=EE_DEV_PROFILE;
+	else if(type==TYPE_EE_ADDR_TYPES)  addr=EE_DEV_TYPES;
+	else                               return RE_ERR;
+	
+	cnt=2;
+	for(i=0;i<3;i++)buf[i]=dat;
+	
+	while(cnt>0)
+	{
+		I2C_WP_SET(0);
+		err=WriteDataToFlash(addr,&buf[0],3);
+		I2C_WP_SET(1);
+		cnt--;
+		if(err==0)return RE_OK;
+	}
+	return RE_ERR;
+}
+/*
+*********************************************************************************************************
+*	函 数 名: 
+*	功能说明: 
+*	形    参：
+*			 
+*	返 回 值: 无
+*********************************************************************************************************
+*/
+uint8_t Read_Dev(uint8_t type)
+{
+	 uint8_t err,cnt,buf[3],addr,dat;
+	  
+	if(type==TYPE_EE_ADDR_USED)        addr=EE_DEV_USED;
+	else if(type==TYPE_EE_ADDR_ADDR0)  addr=EE_DEV_ADDR0;
+	else if(type==TYPE_EE_ADDR_ADDR1)  addr=EE_DEV_ADDR1;
+	else if(type==TYPE_EE_ADDR_MODE)   addr=EE_DEV_MODE;
+	else if(type==TYPE_EE_ADDR_PROFILE)addr=EE_DEV_PROFILE;
+	else if(type==TYPE_EE_ADDR_TYPES)  addr=EE_DEV_TYPES;
+	else                               return RE_ERR;
+	
+	  cnt=2;
+        while(cnt>0)
+	{
+		   err=ReadDataFromFlash(addr,&buf[0],3);
+		  cnt--;
+		  if(err==0)break;
+	}
+	
+	if((buf[0]==buf[1])&&(buf[1]==buf[2])&&(buf[0]==buf[2]))
+	{
+		  return buf[0];
+	}
+	else 
+	{
+		  if(buf[0]==buf[1])
+			{
+				     Write_Dev(buf[0],type);
+				     dat=buf[0];
+			}
+			else if(buf[0]==buf[2])
+			{
+				     Write_Dev(buf[0],type);
+				     dat=buf[0];
+			}
+			else if(buf[1]==buf[2])
+			{
+				     Write_Dev(buf[1],type);
+				     dat=buf[1];
+			}
+			else
+			{
+			             Write_Dev(0xff,type);
+				     dat=RE_ERR;
+			}
+	}	  
+	return dat;	
+}
+
+//=====================================================================================================
+
+
+//======================================================================================================
