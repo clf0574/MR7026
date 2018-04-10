@@ -18,9 +18,9 @@
 
 
 #define DEV_INFO_NUM   21
-unsigned char DEV_INFO[DEV_INFO_NUM]={'M','R','3','2','0','0','-','1','8','-','0','3','-','2','9','-','S','1','.','0','3',};
-unsigned char DEV_INFO_1[DEV_INFO_NUM]={'M','R','7','0','2','6','-','1','8','-','0','3','-','2','9','-','S','1','.','0','3',};
-unsigned char DEV_INFO_2[DEV_INFO_NUM]={'M','R','3','x','0','0','-','1','8','-','0','3','-','2','9','-','S','1','.','0','3',};
+unsigned char DEV_INFO[DEV_INFO_NUM]={'M','R','3','2','0','0','-','1','8','-','0','4','-','0','3','-','S','1','.','0','3',};
+unsigned char DEV_INFO_1[DEV_INFO_NUM]={'M','R','7','0','2','6','-','1','8','-','0','4','-','0','3','-','S','1','.','0','3',};
+unsigned char DEV_INFO_2[DEV_INFO_NUM]={'M','R','3','x','0','0','-','1','8','-','0','4','-','0','3','-','S','1','.','0','3',};
 
 //=========================================================================================================  
 //÷°øÿ÷∆”Ú
@@ -1175,6 +1175,7 @@ void IT1_Function_Date(void)                                                    
 							//Õ∆ÀÕ÷∏¡Óø™πÿ
 							else if(Date_Num==2)
 							{
+								
 								    //if((RxDat.buf[7]==7)&&(RxDat.buf[8]==1))Dev.mode|=0x02;
 										//else if((RxDat.buf[7]==7)&&(RxDat.buf[8]==2))Dev.mode&=0xfd;
 								    //Write_Dev(Dev.mode,TYPE_EE_ADDR_MODE);
@@ -1182,7 +1183,7 @@ void IT1_Function_Date(void)                                                    
 								    //20180326 add================================================
 								   	LockItem=lock.item;
 								    if((RxDat.buf[7]==7)&&(RxDat.buf[8]==1))LockItem.stu|=0x02;
-										else if((RxDat.buf[7]==7)&&(RxDat.buf[8]==2))LockItem.stu&=0xfd;
+										else if((RxDat.buf[7]==7)&&(RxDat.buf[8]==0))LockItem.stu&=0xfd;//clf mod RxDat.buf[8] 2=>0
 										Write_Lock_Table(0);
 								    //=============================================================
 								
@@ -2470,7 +2471,7 @@ unsigned char IT1_RS4852Wireless(unsigned char pa1,unsigned char pa2)
 // 	{
 // 		tmp=EX_KEY_MOTOR1;
 // 	}
-	if((pa1==0x75)&&(pa2==0x40))//ŒﬁœﬂÕ®”√√Ê∞ÂÂ
+	if((pa1==0x75)&&(pa2==0x40))//ŒﬁœﬂÕ®”√√Ê∞Â?
  	{
  		tmp=EX_KEY_NORMAL1;
  	}

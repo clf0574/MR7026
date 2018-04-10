@@ -693,26 +693,26 @@
 000016  2301              MOVS     r3,#1
 000018  220a              MOVS     r2,#0xa
 00001a  2102              MOVS     r1,#2
-00001c  481c              LDR      r0,|L7.144|
+00001c  481e              LDR      r0,|L7.152|
 00001e  f7fffffe          BL       hSCH_Add_Task
 ;;;47     	hSCH_Add_Task(AppTask_WirelessRecv, 3, 10, 1);        		 	//无线接收任务
 000022  2301              MOVS     r3,#1
 000024  220a              MOVS     r2,#0xa
 000026  2103              MOVS     r1,#3
-000028  481a              LDR      r0,|L7.148|
+000028  481c              LDR      r0,|L7.156|
 00002a  f7fffffe          BL       hSCH_Add_Task
 ;;;48     	hSCH_Add_Task(AppTask_WirelessSend, 3, 20, 1);        	 		//无线发送任务
 00002e  2301              MOVS     r3,#1
 000030  2214              MOVS     r2,#0x14
 000032  2103              MOVS     r1,#3
-000034  4818              LDR      r0,|L7.152|
+000034  481a              LDR      r0,|L7.160|
 000036  f7fffffe          BL       hSCH_Add_Task
 ;;;49     	
 ;;;50     	hSCH_Add_Task(AppTask_Run, 4, 10, 1);        						 		//运行任务 //每10mS调用一次
 00003a  2301              MOVS     r3,#1
 00003c  220a              MOVS     r2,#0xa
 00003e  2104              MOVS     r1,#4
-000040  4816              LDR      r0,|L7.156|
+000040  4818              LDR      r0,|L7.164|
 000042  f7fffffe          BL       hSCH_Add_Task
 ;;;51     	
 ;;;52     	Led_set(0,100,100,3,1);	
@@ -733,7 +733,7 @@
 000062  f7fffffe          BL       Led_set
 ;;;54     	
 ;;;55     	bsp_StartHardTimer(1,100,Check_Frame_Interval);							//每100uS调用一次帧间隔检测	
-000066  4a0e              LDR      r2,|L7.160|
+000066  4a10              LDR      r2,|L7.168|
 000068  2164              MOVS     r1,#0x64
 00006a  2001              MOVS     r0,#1
 00006c  f7fffffe          BL       bsp_StartHardTimer
@@ -745,43 +745,45 @@
 ;;;58     	
 ;;;59     	//======================================================================
 ;;;60     	//不要挪动位置
-;;;61     	//bsp_InitIwdg(2000);																				//使能看门狗
+;;;61     	bsp_InitIwdg(2000);																				//使能看门狗
+000078  f44f60fa          MOV      r0,#0x7d0
+00007c  f7fffffe          BL       bsp_InitIwdg
 ;;;62     	if((Dev.err & ERR_RESET)==0x00)IWDG_Feed();
-000078  480a              LDR      r0,|L7.164|
-00007a  7b80              LDRB     r0,[r0,#0xe]  ; Dev
-00007c  f0100f08          TST      r0,#8
-000080  d101              BNE      |L7.134|
-000082  f7fffffe          BL       IWDG_Feed
-                  |L7.134|
+000080  480a              LDR      r0,|L7.172|
+000082  7b80              LDRB     r0,[r0,#0xe]  ; Dev
+000084  f0100f08          TST      r0,#8
+000088  d101              BNE      |L7.142|
+00008a  f7fffffe          BL       IWDG_Feed
+                  |L7.142|
 ;;;63     	//=======================================================================
 ;;;64     
 ;;;65     	/* 进入主程序循环体 */
 ;;;66     	while (1)
-000086  e001              B        |L7.140|
-                  |L7.136|
+00008e  e001              B        |L7.148|
+                  |L7.144|
 ;;;67     	{
 ;;;68     		/* 任务执行函数 */
 ;;;69     		hSCH_Dispatch_Tasks();
-000088  f7fffffe          BL       hSCH_Dispatch_Tasks
-                  |L7.140|
-00008c  e7fc              B        |L7.136|
+000090  f7fffffe          BL       hSCH_Dispatch_Tasks
+                  |L7.148|
+000094  e7fc              B        |L7.144|
 ;;;70     	}
 ;;;71     }
 ;;;72     
                           ENDP
 
-00008e  0000              DCW      0x0000
-                  |L7.144|
-                          DCD      taskRxProcess
-                  |L7.148|
-                          DCD      AppTask_WirelessRecv
+000096  0000              DCW      0x0000
                   |L7.152|
-                          DCD      AppTask_WirelessSend
+                          DCD      taskRxProcess
                   |L7.156|
-                          DCD      AppTask_Run
+                          DCD      AppTask_WirelessRecv
                   |L7.160|
-                          DCD      Check_Frame_Interval
+                          DCD      AppTask_WirelessSend
                   |L7.164|
+                          DCD      AppTask_Run
+                  |L7.168|
+                          DCD      Check_Frame_Interval
+                  |L7.172|
                           DCD      ||Dev||
 
                           AREA ||i.taskRxProcess||, CODE, READONLY, ALIGN=2

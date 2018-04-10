@@ -153,12 +153,12 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>/</Name>
+          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U58009527 -O78 -S2 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(1BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD20000000 -FC800 -FN1 -FF0STM32F10x_128 -FS08000000 -FL010000</Name>
+          <Name>-U20090928 -O78 -S2 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(1BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD20000000 -FC800 -FN1 -FF0STM32F10x_128 -FS08000000 -FL010000</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint>
@@ -297,10 +297,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>86</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>10</TopLine>
-      <CurrentLine>23</CurrentLine>
+      <TopLine>314</TopLine>
+      <CurrentLine>321</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\App_IT1.c</PathWithFileName>
       <FilenameWithoutPath>App_IT1.c</FilenameWithoutPath>
@@ -315,8 +315,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1334</TopLine>
-      <CurrentLine>1336</CurrentLine>
+      <TopLine>63</TopLine>
+      <CurrentLine>68</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\Func.c</PathWithFileName>
       <FilenameWithoutPath>Func.c</FilenameWithoutPath>
@@ -331,7 +331,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>478</TopLine>
+      <TopLine>479</TopLine>
       <CurrentLine>480</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\App_Wireless.c</PathWithFileName>
@@ -347,8 +347,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>20</TopLine>
-      <CurrentLine>21</CurrentLine>
+      <TopLine>41</TopLine>
+      <CurrentLine>48</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\my_queue_chl.c</PathWithFileName>
       <FilenameWithoutPath>my_queue_chl.c</FilenameWithoutPath>
@@ -364,7 +364,7 @@
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>155</TopLine>
-      <CurrentLine>160</CurrentLine>
+      <CurrentLine>162</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\Time_Triggered.c</PathWithFileName>
       <FilenameWithoutPath>Time_Triggered.c</FilenameWithoutPath>
@@ -659,8 +659,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>596</TopLine>
-      <CurrentLine>598</CurrentLine>
+      <TopLine>622</TopLine>
+      <CurrentLine>674</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\bsp\src\bsp_DS28E11.c</PathWithFileName>
       <FilenameWithoutPath>bsp_DS28E11.c</FilenameWithoutPath>
@@ -819,7 +819,7 @@
       <Focus>0</Focus>
       <ColumnNumber>44</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>874</TopLine>
+      <TopLine>883</TopLine>
       <CurrentLine>884</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_usart.c</PathWithFileName>
