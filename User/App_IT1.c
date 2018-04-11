@@ -18,9 +18,9 @@
 
 
 #define DEV_INFO_NUM   21
-unsigned char DEV_INFO[DEV_INFO_NUM]={'M','R','3','2','0','0','-','1','8','-','0','4','-','0','3','-','S','1','.','0','3',};
-unsigned char DEV_INFO_1[DEV_INFO_NUM]={'M','R','7','0','2','6','-','1','8','-','0','4','-','0','3','-','S','1','.','0','3',};
-unsigned char DEV_INFO_2[DEV_INFO_NUM]={'M','R','3','x','0','0','-','1','8','-','0','4','-','0','3','-','S','1','.','0','3',};
+unsigned char DEV_INFO[DEV_INFO_NUM]={'M','R','3','2','0','0','-','1','8','-','0','4','-','1','0','-','S','1','.','0','3',};
+unsigned char DEV_INFO_1[DEV_INFO_NUM]={'M','R','7','0','2','6','-','1','8','-','0','4','-','1','0','-','S','1','.','0','3',};
+unsigned char DEV_INFO_2[DEV_INFO_NUM]={'M','R','3','x','0','0','-','1','8','-','0','4','-','1','0','-','S','1','.','0','3',};
 
 //=========================================================================================================  
 //帧控制域
@@ -1282,6 +1282,7 @@ void IT1_Function_Date(void)                                                    
 //							}
 
 							tmp=lock.item.stu;
+							tmp&=0x07;
 //实际原因为APP发关指令时，模拟发了一个关指令，以便APP能回复操作，造成门锁实际和转发器不一致
 							if (cmd==0x02)tmp|=0x01;
 							else 					tmp&=~0x01;
@@ -1716,7 +1717,7 @@ void IT1_Turn_DataLoad(uint8_t index,uint8_t cmd,uint8_t dat)
 				ps->buf[0]=0x04;			//帧控制
 				ps->buf[1]=(Master_Address>>8)&0x00ff;  //目标地址H
 				ps->buf[2]=Master_Address;		//目标地址L
-				ps->buf[3]=0x00;	
+				ps->buf[3]=Dev.rand++;//0x00;	
 				ps->buf[4]=Dev.addr[0];
 				ps->buf[5]=0x80+index+1;		//通道号
 				

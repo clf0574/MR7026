@@ -3050,13 +3050,13 @@
 00002e  f04f092e          MOV      r9,#0x2e
 000032  e01e              B        |L28.114|
                   |L28.52|
-;;;1019   				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=6;
+;;;1019   				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=7;
 000034  ebc501c5          RSB      r1,r5,r5,LSL #3
 000038  482b              LDR      r0,|L28.232|
 00003a  f8100011          LDRB     r0,[r0,r1,LSL #1]
 00003e  28fc              CMP      r0,#0xfc
 000040  d102              BNE      |L28.72|
-000042  f04f0906          MOV      r9,#6
+000042  f04f0907          MOV      r9,#7
 000046  e014              B        |L28.114|
                   |L28.72|
 ;;;1020   	      else if(Ex_Table.Exchange[index].type==EX_DEV_SUN)	tmp=1;
@@ -3099,7 +3099,7 @@
 ;;;1033   				}
 ;;;1034   				else
 ;;;1035   				{
-;;;1036   						for(i=0;i<lin;i++)Pannel.item[index].onoffbuf[lin] =0x00;
+;;;1036   						for(i=0;i<7;i++)Pannel.item[index].onoffbuf[lin] =0x00;
 ;;;1037   				}
 ;;;1038   				Write_Pannel_Table(index);	
 ;;;1039   }
@@ -3145,7 +3145,7 @@
 0000d6  1c78              ADDS     r0,r7,#1              ;1036
 0000d8  b2c7              UXTB     r7,r0                 ;1036
                   |L28.218|
-0000da  42b7              CMP      r7,r6                 ;1036
+0000da  2f07              CMP      r7,#7                 ;1036
 0000dc  dbf4              BLT      |L28.200|
                   |L28.222|
 0000de  4628              MOV      r0,r5                 ;1038
@@ -3190,13 +3190,13 @@
 00002e  f04f092e          MOV      r9,#0x2e
 000032  e01e              B        |L29.114|
                   |L29.52|
-;;;989    				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=6;
+;;;989    				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=7;
 000034  ebc501c5          RSB      r1,r5,r5,LSL #3
 000038  482c              LDR      r0,|L29.236|
 00003a  f8100011          LDRB     r0,[r0,r1,LSL #1]
 00003e  28fc              CMP      r0,#0xfc
 000040  d102              BNE      |L29.72|
-000042  f04f0906          MOV      r9,#6
+000042  f04f0907          MOV      r9,#7
 000046  e014              B        |L29.114|
                   |L29.72|
 ;;;990    	      else if(Ex_Table.Exchange[index].type==EX_DEV_SUN)	tmp=1;

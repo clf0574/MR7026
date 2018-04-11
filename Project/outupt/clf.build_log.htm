@@ -8,21 +8,14 @@ Project File Date:  03/20/2018
 
 <h2>Output:</h2>
 Build target 'Flash'
+compiling App_IT1.c...
+..\..\User\App_IT1.c(727): warning:  #550-D: variable "rt" was set but never used
+            uint8_t buf[2],rt;
+..\..\User\App_IT1.c: 1 warning, 0 errors
 linking...
-Program Size: Code=31432 RO-data=384 RW-data=896 ZI-data=14520  
+Program Size: Code=31448 RO-data=384 RW-data=896 ZI-data=14520  
 FromELF: creating hex file...
-"..\outupt\clf.axf" - 0 Error(s), 0 Warning(s).
-ar Newupdata[8]={ 0x12,0x34,0x56,0x78,0x90,0x12,0x34,0x56,};
-..\..\User\bsp\src\bsp_DS28E11.c(211): warning:  #177-D: variable "GetPageData" was declared but never referenced
-      unsigned char GetPageData[32],PageNumber=0,i;
-..\..\User\bsp\src\bsp_DS28E11.c(211): warning:  #177-D: variable "PageNumber" was declared but never referenced
-      unsigned char GetPageData[32],PageNumber=0,i;
-..\..\User\bsp\src\bsp_DS28E11.c(215): warning:  #550-D: variable "Verify_outcome" was set but never used
-                unsigned char Verify_outcome;
-..\..\User\bsp\src\bsp_DS28E11.c(128): warning:  #550-D: variable "SECRET" was set but never used
-  static unsigned char SECRET[32];
-..\..\User\bsp\src\bsp_DS28E11.c: 5 warnings, 0 errors
-linking...
-Program Size: Code=31432 RO-data=384 RW-data=896 ZI-data=14520  
-FromELF: creating hex file...
-"..\outupt\clf.axf" - 0 Error(s), 5 Warning(s).
+"..\outupt\clf.axf" - 0 Error(s), 1 Warning(s).
+</pre>
+</body>
+</html>

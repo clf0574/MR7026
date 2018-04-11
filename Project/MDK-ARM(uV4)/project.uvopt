@@ -167,7 +167,7 @@
           <Type>0</Type>
           <LineNumber>562</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134242866</Address>
+          <Address>134243014</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -226,6 +226,11 @@
           <count>6</count>
           <WinNumber>2</WinNumber>
           <ItemText>IT2_INFO</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>wl_frame</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
@@ -299,8 +304,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>314</TopLine>
-      <CurrentLine>321</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>19</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\App_IT1.c</PathWithFileName>
       <FilenameWithoutPath>App_IT1.c</FilenameWithoutPath>
@@ -313,10 +318,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>51</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>63</TopLine>
-      <CurrentLine>68</CurrentLine>
+      <TopLine>983</TopLine>
+      <CurrentLine>995</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\Func.c</PathWithFileName>
       <FilenameWithoutPath>Func.c</FilenameWithoutPath>
@@ -329,10 +334,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>17</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>479</TopLine>
-      <CurrentLine>480</CurrentLine>
+      <TopLine>1121</TopLine>
+      <CurrentLine>1130</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\App_Wireless.c</PathWithFileName>
       <FilenameWithoutPath>App_Wireless.c</FilenameWithoutPath>
@@ -347,8 +352,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>41</TopLine>
-      <CurrentLine>48</CurrentLine>
+      <TopLine>20</TopLine>
+      <CurrentLine>21</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\my_queue_chl.c</PathWithFileName>
       <FilenameWithoutPath>my_queue_chl.c</FilenameWithoutPath>
@@ -657,10 +662,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>4</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>622</TopLine>
-      <CurrentLine>674</CurrentLine>
+      <TopLine>202</TopLine>
+      <CurrentLine>216</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\bsp\src\bsp_DS28E11.c</PathWithFileName>
       <FilenameWithoutPath>bsp_DS28E11.c</FilenameWithoutPath>

@@ -302,7 +302,7 @@ void Wireless_Recv(void)
 									//以下要用到解密程序 20171206新加
 									else
 									{
-												Wireless_Recv_Disable(&wbuf[0],150);			//在以后的100*5mS时间内，禁止处理同样的帧
+												Wireless_Recv_Disable(&wbuf[0],250);			//在以后的100*5mS时间内，禁止处理同样的帧
 												//数据处理
 												if((Dev.type&0xf000)==0xb000)
 												{

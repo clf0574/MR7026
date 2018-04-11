@@ -986,7 +986,7 @@ void Remote_Key_En(uint8_t index,uint8_t st)
 				
 				if(Ex_Table.Exchange[index].type==EX_KEY_54KEY)			tmp=58;
 				else if(Ex_Table.Exchange[index].type==EX_KEY_42KEY)tmp=46;
-				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=6;
+				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=7;
 	      else if(Ex_Table.Exchange[index].type==EX_DEV_SUN)	tmp=1;
 	      else if(Ex_Table.Exchange[index].type==EX_DEV_SUN1)	tmp=1;
 				//else                                              	tmp=0;
@@ -1016,7 +1016,7 @@ void Remote_Key_Dis(uint8_t index,uint8_t st)
 				
 				if(Ex_Table.Exchange[index].type==EX_KEY_54KEY)			tmp=58;
 				else if(Ex_Table.Exchange[index].type==EX_KEY_42KEY)tmp=46;
-				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=6;
+				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=7;
 	      else if(Ex_Table.Exchange[index].type==EX_DEV_SUN)	tmp=1;
 				else if(Ex_Table.Exchange[index].type==EX_DEV_SUN1)	tmp=1;
 				//else                                              tmp=0;
@@ -1033,7 +1033,7 @@ void Remote_Key_Dis(uint8_t index,uint8_t st)
 				}
 				else
 				{
-						for(i=0;i<lin;i++)Pannel.item[index].onoffbuf[lin] =0x00;
+						for(i=0;i<7;i++)Pannel.item[index].onoffbuf[lin] =0x00;
 				}
 				Write_Pannel_Table(index);	
 }

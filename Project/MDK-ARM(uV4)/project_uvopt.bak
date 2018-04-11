@@ -153,12 +153,12 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>/</Name>
+          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U58009527 -O78 -S2 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(1BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD20000000 -FC800 -FN1 -FF0STM32F10x_128 -FS08000000 -FL010000</Name>
+          <Name>-U20090928 -O78 -S2 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(1BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD20000000 -FC800 -FN1 -FF0STM32F10x_128 -FS08000000 -FL010000</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint>
@@ -167,7 +167,7 @@
           <Type>0</Type>
           <LineNumber>562</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134242866</Address>
+          <Address>134243014</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -227,6 +227,11 @@
           <WinNumber>2</WinNumber>
           <ItemText>IT2_INFO</ItemText>
         </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>wl_frame</ItemText>
+        </Ww>
       </WatchWindow2>
       <MemoryWindow1>
         <Mm>
@@ -283,7 +288,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>36</TopLine>
+      <TopLine>30</TopLine>
       <CurrentLine>37</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\main.c</PathWithFileName>
@@ -297,10 +302,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>21</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>15</TopLine>
-      <CurrentLine>16</CurrentLine>
+      <TopLine>364</TopLine>
+      <CurrentLine>365</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\App_IT1.c</PathWithFileName>
       <FilenameWithoutPath>App_IT1.c</FilenameWithoutPath>
@@ -313,10 +318,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>51</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1335</TopLine>
-      <CurrentLine>1336</CurrentLine>
+      <TopLine>983</TopLine>
+      <CurrentLine>995</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\Func.c</PathWithFileName>
       <FilenameWithoutPath>Func.c</FilenameWithoutPath>
@@ -329,10 +334,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>17</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>479</TopLine>
-      <CurrentLine>480</CurrentLine>
+      <TopLine>1121</TopLine>
+      <CurrentLine>1130</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\App_Wireless.c</PathWithFileName>
       <FilenameWithoutPath>App_Wireless.c</FilenameWithoutPath>
@@ -363,8 +368,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>159</TopLine>
-      <CurrentLine>160</CurrentLine>
+      <TopLine>155</TopLine>
+      <CurrentLine>162</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\Time_Triggered.c</PathWithFileName>
       <FilenameWithoutPath>Time_Triggered.c</FilenameWithoutPath>
@@ -547,7 +552,7 @@
       <Focus>0</Focus>
       <ColumnNumber>52</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>649</TopLine>
+      <TopLine>644</TopLine>
       <CurrentLine>650</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\bsp\src\bsp_timer.c</PathWithFileName>
@@ -657,10 +662,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>4</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>597</TopLine>
-      <CurrentLine>598</CurrentLine>
+      <TopLine>202</TopLine>
+      <CurrentLine>216</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\bsp\src\bsp_DS28E11.c</PathWithFileName>
       <FilenameWithoutPath>bsp_DS28E11.c</FilenameWithoutPath>

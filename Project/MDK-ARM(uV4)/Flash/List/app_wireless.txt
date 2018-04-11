@@ -1407,7 +1407,7 @@
 ;;;302    									//以下要用到解密程序 20171206新加
 ;;;303    									else
 ;;;304    									{
-;;;305    												Wireless_Recv_Disable(&wbuf[0],150);			//在以后的100*5mS时间内，禁止处理同样的帧
+;;;305    												Wireless_Recv_Disable(&wbuf[0],250);			//在以后的100*5mS时间内，禁止处理同样的帧
 ;;;306    												//数据处理
 ;;;307    												if((Dev.type&0xf000)==0xb000)
 ;;;308    												{
@@ -2205,7 +2205,7 @@
                   |L9.1052|
                           DCD      WirelessSend_Queue
                   |L9.1056|
-000420  2196              MOVS     r1,#0x96              ;305
+000420  21fa              MOVS     r1,#0xfa              ;305
 000422  48fe              LDR      r0,|L9.2076|
 000424  f7fffffe          BL       Wireless_Recv_Disable
 000428  48fd              LDR      r0,|L9.2080|

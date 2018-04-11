@@ -36336,8 +36336,8 @@ N				if(Ex_Table.Exchange[index].type==EX_KEY_54KEY)			tmp=58;
 X				if(Ex_Table.Exchange[index].type==0xfa)			tmp=58;
 N				else if(Ex_Table.Exchange[index].type==EX_KEY_42KEY)tmp=46;
 X				else if(Ex_Table.Exchange[index].type==0xfb)tmp=46;
-N				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=6;
-X				else if(Ex_Table.Exchange[index].type==0xfc)	tmp=6;
+N				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=7;
+X				else if(Ex_Table.Exchange[index].type==0xfc)	tmp=7;
 N	      else if(Ex_Table.Exchange[index].type==EX_DEV_SUN)	tmp=1;
 X	      else if(Ex_Table.Exchange[index].type==0xe2)	tmp=1;
 N	      else if(Ex_Table.Exchange[index].type==EX_DEV_SUN1)	tmp=1;
@@ -36373,8 +36373,8 @@ N				if(Ex_Table.Exchange[index].type==EX_KEY_54KEY)			tmp=58;
 X				if(Ex_Table.Exchange[index].type==0xfa)			tmp=58;
 N				else if(Ex_Table.Exchange[index].type==EX_KEY_42KEY)tmp=46;
 X				else if(Ex_Table.Exchange[index].type==0xfb)tmp=46;
-N				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=6;
-X				else if(Ex_Table.Exchange[index].type==0xfc)	tmp=6;
+N				else if(Ex_Table.Exchange[index].type==EX_KEY_TURN)	tmp=7;
+X				else if(Ex_Table.Exchange[index].type==0xfc)	tmp=7;
 N	      else if(Ex_Table.Exchange[index].type==EX_DEV_SUN)	tmp=1;
 X	      else if(Ex_Table.Exchange[index].type==0xe2)	tmp=1;
 N				else if(Ex_Table.Exchange[index].type==EX_DEV_SUN1)	tmp=1;
@@ -36393,7 +36393,7 @@ N						Pannel.item[index].onoffbuf[lin] &=~(0x01<<row);
 N				}
 N				else
 N				{
-N						for(i=0;i<lin;i++)Pannel.item[index].onoffbuf[lin] =0x00;
+N						for(i=0;i<7;i++)Pannel.item[index].onoffbuf[lin] =0x00;
 N				}
 N				Write_Pannel_Table(index);	
 N}
